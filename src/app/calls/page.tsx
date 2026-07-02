@@ -248,9 +248,16 @@ function CallsContent() {
                   </td>
                   <td className="py-6 px-4 text-sm text-slate-600">{call.responsible || '—'}</td>
                   <td className="py-6 px-4">
-                    <Link href={`/calls/${call.id}`} className="text-blue-600 hover:text-blue-700 flex items-center justify-center">
-                      <Eye className="w-4 h-4" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {user?.role === 'operator' && call.status === 'Aberto' && (
+                        <Link href={`/calls/${call.id}`} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
+                          Registrar
+                        </Link>
+                      )}
+                      <Link href={`/calls/${call.id}`} className="text-blue-600 hover:text-blue-700 flex items-center justify-center">
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

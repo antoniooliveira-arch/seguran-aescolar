@@ -133,7 +133,7 @@ export default function Dashboard() {
             </Link>
             <Link href="/new-call" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
               <Plus className="w-4 h-4" />
-              Nova Ocorrência
+              {user.role === 'operator' ? 'Registrar Ocorrência' : 'Nova Ocorrência'}
             </Link>
             <Link href="/schools" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
               <SchoolIcon className="w-4 h-4" />
