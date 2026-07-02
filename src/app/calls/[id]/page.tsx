@@ -13,6 +13,7 @@ import { Call, User } from '@/types';
 const statusFlow: Record<string, { role: string; next: string; label: string; icon: any }[]> = {
   Aberto: [
     { role: 'operador_cftv', next: 'Em atendimento', label: 'Iniciar Atendimento', icon: Clock },
+    { role: 'tatico', next: 'Em atendimento', label: 'Atender Ocorrência', icon: Clock },
   ],
   'Em atendimento': [
     { role: 'tatico', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
@@ -61,7 +62,7 @@ export default function CallDetailPage() {
       body.closingDate = new Date().toISOString();
       body.closingResponsible = user?.name;
     }
-    if (nextStatus === 'Aguardando parecer' && report) {
+    if ((nextStatus === 'Em atendimento' || nextStatus === 'Aguardando parecer') && report) {
       body.report = report;
     }
 
@@ -203,11 +204,11 @@ export default function CallDetailPage() {
               <CardContent className="space-y-4">
                 {availableActions.map((action) => (
                   <div key={action.next}>
-                    {action.next === 'Aguardando parecer' && !showReport ? (
+                    {(action.next === 'Em atendimento' || action.next === 'Aguardando parecer') && !showReport ? (
                       <Button onClick={() => setShowReport(true)} className="flex items-center gap-2">
-                        <Send className="w-4 h-4" /> Descrever Ocorrido
+                        <Send className="w-4 h-4" /> {action.next === 'Em atendimento' ? 'Registrar Ocorrido' : 'Solicitar Parecer'}
                       </Button>
-                    ) : action.next === 'Aguardando parecer' && showReport ? (
+                    ) : (action.next === 'Em atendimento' || action.next === 'Aguardando parecer') && showReport ? (
                       <div className="space-y-3">
                         <textarea
                           placeholder="Descreva o que foi feito e o que foi constatado..."
@@ -217,7 +218,7 @@ export default function CallDetailPage() {
                         />
                         <div className="flex gap-2">
                           <Button onClick={() => handleTransition(action.next)} disabled={!report.trim()} className="flex items-center gap-2">
-                            <Send className="w-4 h-4" /> Solicitar Parecer
+                            <Send className="w-4 h-4" /> {action.label}
                           </Button>
                           <Button variant="outline" onClick={() => { setShowReport(false); setReport(''); }}>
                             Cancelar
