@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { calls, schools } from '@/db/schema';
+import { calls, schools, users } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { generateCallNumber } from '@/lib/utils';
 
@@ -12,11 +12,13 @@ export async function GET() {
       .select()
       .from(calls)
       .leftJoin(schools, eq(calls.schoolId, schools.id))
+      .leftJoin(users, eq(calls.createdBy, users.id))
       .orderBy(desc(calls.createdAt));
 
     const formatted = result.map((row: any) => ({
       ...row.calls,
       school: row.schools || undefined,
+      creator: row.users || undefined,
     }));
 
     return NextResponse.json(formatted);

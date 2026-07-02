@@ -8,17 +8,18 @@ import { ArrowLeft, BarChart3, Download, FileText, Printer } from 'lucide-react'
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Call, User } from '@/types';
+import { Call, User, ROLE_LABELS } from '@/types';
 
 export default function ReportsPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [calls, setCalls] = useState<Call[]>([]);
-  const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
+  const [calls, setCalls] = useState<any[]>([]);
+  const [filteredCalls, setFilteredCalls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [schoolFilter, setSchoolFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,8 +57,11 @@ export default function ReportsPage() {
     if (schoolFilter !== 'all') {
       result = result.filter(c => c.school?.name === schoolFilter);
     }
+    if (roleFilter !== 'all') {
+      result = result.filter(c => c.creator?.role === roleFilter);
+    }
     setFilteredCalls(result);
-  }, [dateStart, dateEnd, statusFilter, schoolFilter, calls]);
+  }, [dateStart, dateEnd, statusFilter, schoolFilter, roleFilter, calls]);
 
   const schools = [...new Set(calls.map(c => c.school?.name).filter(Boolean))] as string[];
 
@@ -94,10 +98,6 @@ export default function ReportsPage() {
           tr:nth-child(even) { background: #f8fafc; }
           .footer { text-align: center; font-size: 10px; color: #999; margin-top: 32px; border-top: 1px solid #ddd; padding-top: 12px; }
           .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
-          .badge-aberto { background: #fef3c7; color: #92400e; }
-          .badge-atendimento { background: #e0e7ff; color: #3730a3; }
-          .badge-parecer { background: #ffedd5; color: #9a3412; }
-          .badge-concluido { background: #d1fae5; color: #065f46; }
           .summary { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
           .summary-card { flex: 1; min-width: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; }
           .summary-card .num { font-size: 22px; font-weight: bold; color: #1e40af; }
@@ -142,10 +142,20 @@ export default function ReportsPage() {
     'Cancelado': 'bg-red-100 text-red-700',
   };
 
+  const roleColors: Record<string, string> = {
+    admin: 'bg-red-100 text-red-700',
+    supervisor: 'bg-blue-100 text-blue-700',
+    tatico: 'bg-purple-100 text-purple-700',
+    operador_cftv: 'bg-emerald-100 text-emerald-700',
+  };
+
   const total = filteredCalls.length;
   const abertos = filteredCalls.filter(c => c.status === 'Aberto').length;
   const emAtendimento = filteredCalls.filter(c => c.status === 'Em atendimento').length;
   const concluidos = filteredCalls.filter(c => c.status === 'Concluído').length;
+  const totalOperador = filteredCalls.filter(c => c.creator?.role === 'operador_cftv').length;
+  const totalTatico = filteredCalls.filter(c => c.creator?.role === 'tatico').length;
+  const totalAdmin = filteredCalls.filter(c => c.creator?.role === 'admin').length;
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -166,7 +176,7 @@ export default function ReportsPage() {
           </Button>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid lg:grid-cols-5 gap-4 mb-6">
           <div className="space-y-2">
             <label className="text-xs font-medium text-slate-600">Data Início</label>
             <input type="date" value={dateStart} onChange={e => setDateStart(e.target.value)}
@@ -194,10 +204,19 @@ export default function ReportsPage() {
               {schools.map(s => <option key={s} value={s}>{s}</option>)}
             </Select>
           </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-slate-600">Registrado por</label>
+            <Select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
+              <option value="all">Todos</option>
+              <option value="operador_cftv">Operador de CFTV</option>
+              <option value="tatico">Tático</option>
+              <option value="admin">Administrador</option>
+            </Select>
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-6 gap-4 mb-6">
           <Card><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-blue-700">{total}</div>
             <div className="text-xs text-slate-500 uppercase">Total</div>
@@ -208,11 +227,19 @@ export default function ReportsPage() {
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-indigo-600">{emAtendimento}</div>
-            <div className="text-xs text-slate-500 uppercase">Em Atendimento</div>
+            <div className="text-xs text-slate-500 uppercase">Atendimento</div>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-emerald-600">{concluidos}</div>
             <div className="text-xs text-slate-500 uppercase">Concluídos</div>
+          </CardContent></Card>
+          <Card><CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-emerald-700">{totalOperador}</div>
+            <div className="text-xs text-slate-500 uppercase">CFTV</div>
+          </CardContent></Card>
+          <Card><CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-purple-700">{totalTatico + totalAdmin}</div>
+            <div className="text-xs text-slate-500 uppercase">Tático + Admin</div>
           </CardContent></Card>
         </div>
 
@@ -234,7 +261,7 @@ export default function ReportsPage() {
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Escola</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Tipo</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Status</th>
-                    <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Solicitante</th>
+                    <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Registrado por</th>
                     <th className="text-right py-4 px-6 font-medium text-xs uppercase tracking-widest text-slate-500">Equipe</th>
                   </tr>
                 </thead>
@@ -255,7 +282,11 @@ export default function ReportsPage() {
                             {call.status}
                           </span>
                         </td>
-                        <td className="py-4 px-3 text-sm">{call.requester}</td>
+                        <td className="py-4 px-3">
+                          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${roleColors[call.creator?.role] || 'bg-slate-100'}`}>
+                            {ROLE_LABELS[call.creator?.role as keyof typeof ROLE_LABELS] || call.creator?.name || '—'}
+                          </span>
+                        </td>
                         <td className="py-4 px-6 text-sm text-right">{call.team || '—'}</td>
                       </tr>
                     ))
