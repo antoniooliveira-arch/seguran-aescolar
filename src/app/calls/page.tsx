@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -12,7 +12,7 @@ import { ptBR } from 'date-fns/locale';
 import { Call } from '@/types';
 import { ArrowLeft, Eye, Filter, Plus } from 'lucide-react';
 
-export default function CallsPage() {
+function CallsContent() {
   const searchParams = useSearchParams();
   const [calls, setCalls] = useState<Call[]>([]);
   const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
@@ -257,5 +257,13 @@ export default function CallsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CallsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}>
+      <CallsContent />
+    </Suspense>
   );
 }
