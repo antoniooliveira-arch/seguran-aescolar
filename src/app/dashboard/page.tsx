@@ -127,11 +127,7 @@ export default function Dashboard() {
 
         <div className="px-3 py-6 flex-1 overflow-auto">
           <nav className="space-y-1">
-            <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-blue-50 text-blue-700 rounded-2xl">
-              <BarChart3 className="w-4 h-4" />
-              Dashboard
-            </Link>
-            <Link href="/calls" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
+            <Link href="/calls" className="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-blue-50 text-blue-700 rounded-2xl">
               <FileText className="w-4 h-4" />
               Chamados
             </Link>
@@ -149,10 +145,6 @@ export default function Dashboard() {
                 Usuários
               </Link>
             )}
-            <Link href="/reports" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
-              <BarChart3 className="w-4 h-4" />
-              Relatórios
-            </Link>
           </nav>
         </div>
 
