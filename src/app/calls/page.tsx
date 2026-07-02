@@ -6,16 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Call } from '@/types';
-import { Eye, Filter, Plus } from 'lucide-react';
+import { ArrowLeft, Eye, Filter, Plus } from 'lucide-react';
 
 export default function CallsPage() {
+  const searchParams = useSearchParams();
   const [calls, setCalls] = useState<Call[]>([]);
   const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('filter') || 'all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
   useEffect(() => {
@@ -107,8 +109,20 @@ export default function CallsPage() {
       );
     }
 
-    if (statusFilter !== 'all') {
-      result = result.filter(call => call.status === statusFilter);
+    if (statusFilter === 'urgent') {
+      result = result.filter(call => call.priority === 'Urgente');
+    } else if (statusFilter !== 'all') {
+      const statusGroups: Record<string, string[]> = {
+        open: ['Aberto', 'Em análise', 'Encaminhado'],
+        inprogress: ['Em atendimento', 'Aguardando parecer'],
+        closed: ['Concluído'],
+      };
+      const statuses = statusGroups[statusFilter];
+      if (statuses) {
+        result = result.filter(call => statuses.includes(call.status));
+      } else {
+        result = result.filter(call => call.status === statusFilter);
+      }
     }
 
     if (priorityFilter !== 'all') {
@@ -131,6 +145,11 @@ export default function CallsPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="flex items-center gap-4 mb-2">
+          <Link href="/dashboard" className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Voltar
+          </Link>
+        </div>
         <div className="flex justify-between items-end mb-8">
           <div>
             <h1 className="text-4xl font-semibold tracking-tight">Chamados</h1>

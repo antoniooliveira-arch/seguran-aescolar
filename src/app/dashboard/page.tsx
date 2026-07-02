@@ -216,61 +216,69 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-amber-600">Abertos</p>
-                    <p className="text-4xl font-semibold mt-1 text-amber-600">{stats.open}</p>
+            <Link href="/calls?filter=open">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-amber-600">Abertos</p>
+                      <p className="text-4xl font-semibold mt-1 text-amber-600">{stats.open}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-amber-100 rounded-2xl flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-amber-600" />
+                    </div>
                   </div>
-                  <div className="w-10 h-10 bg-amber-100 rounded-2xl flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-blue-600">Em Andamento</p>
-                    <p className="text-4xl font-semibold mt-1 text-blue-600">{stats.inProgress}</p>
+            <Link href="/calls?filter=inprogress">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-blue-600">Em Andamento</p>
+                      <p className="text-4xl font-semibold mt-1 text-blue-600">{stats.inProgress}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-emerald-600">Finalizados</p>
-                    <p className="text-4xl font-semibold mt-1 text-emerald-600">{stats.closed}</p>
+            <Link href="/calls?filter=closed">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-emerald-600">Finalizados</p>
+                      <p className="text-4xl font-semibold mt-1 text-emerald-600">{stats.closed}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    </div>
                   </div>
-                  <div className="w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-red-600">Urgentes</p>
-                    <p className="text-4xl font-semibold mt-1 text-red-600">{stats.urgent}</p>
+            <Link href="/calls?filter=urgent">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-red-600">Urgentes</p>
+                      <p className="text-4xl font-semibold mt-1 text-red-600">{stats.urgent}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-red-600" />
+                    </div>
                   </div>
-                  <div className="w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-red-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
 
             <Card>
               <CardContent className="p-6">
