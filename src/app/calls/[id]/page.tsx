@@ -38,56 +38,44 @@ export default function CallDetailPage() {
     }
     setUser(JSON.parse(storedUser));
 
-    const mockCalls: Call[] = [
-      {
-        id: 1, number: "NISE-250001", date: new Date(2025, 0, 15, 8, 30), schoolId: 1,
-        school: { id: 1, name: "CEI Luiz Felipe", type: "CEI" },
-        requester: "Maria Oliveira", phone: "(11) 94567-1122", type: "Vandalismo",
-        priority: "Alta", description: "Pichação nas paredes externas e quebra de 3 vidros.",
-        team: "Equipe Tática Alpha", status: "Em atendimento", responsible: "Supervisor Tático",
-        createdAt: new Date(2025, 0, 15, 8, 30), updatedAt: new Date(2025, 0, 15, 8, 30),
-      },
-      {
-        id: 2, number: "NISE-250002", date: new Date(2025, 0, 16, 14, 15), schoolId: 5,
-        school: { id: 5, name: "CEM São Cristóvão", type: "CEM" },
-        requester: "Prof. Carlos Mendes", phone: "(11) 99876-5544", type: "Invasão",
-        priority: "Urgente", description: "Pessoa não autorizada foi vista dentro do pátio após o horário de aula.",
-        team: "Equipe Bravo", status: "Aberto", createdAt: new Date(2025, 0, 16, 14, 15),
-        updatedAt: new Date(2025, 0, 16, 14, 15),
-      },
-      {
-        id: 3, number: "NISE-250003", date: new Date(2025, 0, 17, 9, 45), schoolId: 12,
-        school: { id: 12, name: "EM Paulo Freire", type: "EM" },
-        requester: "Diretora Ana Paula", phone: "(11) 97788-2233", type: "Furto",
-        priority: "Média", description: "Roubados 2 notebooks da sala de informática durante o final de semana.",
-        team: "Equipe Tática Alpha", status: "Concluído", closingDate: new Date(2025, 0, 18, 11, 0),
-        closingResponsible: "Admin SME",
-        opinion: "Equipe realizou perícia. Boletim de ocorrência registrado. Câmeras serão instaladas.",
-        createdAt: new Date(2025, 0, 17, 9, 45), updatedAt: new Date(2025, 0, 18, 11, 0),
-      },
-      {
-        id: 4, number: "NISE-250004", date: new Date(2025, 0, 18, 10, 20), schoolId: 3,
-        school: { id: 3, name: "CEI Bruno Leonardo", type: "CEI" },
-        requester: "Coordenador Pedro Lima", phone: "(11) 91234-5678", type: "Ameaça",
-        priority: "Alta", description: "Recebemos ligação ameaçadora dizendo que havia uma bomba na escola.",
-        team: "Equipe Delta", status: "Em análise", createdAt: new Date(2025, 0, 18, 10, 20),
-        updatedAt: new Date(2025, 0, 18, 10, 20),
-      },
-    ];
-
-    const found = mockCalls.find(c => c.id === Number(params.id));
-    if (found) setCall(found);
+    fetch('/api/calls')
+      .then(res => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const found = data.find((c: any) => c.id === Number(params.id));
+          if (found) {
+            setCall({ ...found, date: new Date(found.date), createdAt: new Date(found.createdAt), updatedAt: new Date(found.updatedAt), closingDate: found.closingDate ? new Date(found.closingDate) : undefined });
+          }
+        }
+      })
+      .catch(err => console.error('Error fetching call:', err));
   }, [params.id]);
 
-  const handleTransition = (nextStatus: string) => {
+  const handleTransition = async (nextStatus: string) => {
     if (!call) return;
-    const updated = { ...call, status: nextStatus as Call['status'], updatedAt: new Date() };
+
+    const body: Record<string, any> = { status: nextStatus };
     if (nextStatus === 'Concluído' && opinion) {
-      updated.opinion = opinion;
-      updated.closingDate = new Date();
-      updated.closingResponsible = user?.name;
+      body.opinion = opinion;
+      body.closingDate = new Date().toISOString();
+      body.closingResponsible = user?.name;
     }
-    setCall(updated);
+
+    try {
+      const res = await fetch(`/api/calls/${call.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setCall(data.call);
+      }
+    } catch (error) {
+      console.error('Error updating call:', error);
+    }
+
     setShowOpinion(false);
     setOpinion('');
   };

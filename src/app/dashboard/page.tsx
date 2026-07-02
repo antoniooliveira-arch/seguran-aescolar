@@ -26,63 +26,15 @@ export default function Dashboard() {
     }
     setUser(JSON.parse(storedUser));
 
-    // Mock data for demo
-    const mockCalls: Call[] = [
-      {
-        id: 1,
-        number: "NISE-250001",
-        date: new Date(2025, 0, 15, 8, 30),
-        schoolId: 1,
-        school: { id: 1, name: "CEI Luiz Felipe", type: "CEI" },
-        requester: "Maria Oliveira",
-        phone: "(11) 94567-1122",
-        type: "Vandalismo",
-        priority: "Alta",
-        description: "Pichação nas paredes externas e quebra de 3 vidros.",
-        team: "Equipe Tática Alpha",
-        status: "Em atendimento",
-        responsible: "Supervisor Tático",
-        createdAt: new Date(2025, 0, 15, 8, 30),
-        updatedAt: new Date(2025, 0, 15, 8, 30),
-      },
-      {
-        id: 2,
-        number: "NISE-250002",
-        date: new Date(2025, 0, 16, 14, 15),
-        schoolId: 5,
-        school: { id: 5, name: "CEM São Cristóvão", type: "CEM" },
-        requester: "Prof. Carlos Mendes",
-        phone: "(11) 99876-5544",
-        type: "Invasão",
-        priority: "Urgente",
-        description: "Pessoa não autorizada foi vista dentro do pátio após o horário de aula.",
-        team: "Equipe Bravo",
-        status: "Aberto",
-        createdAt: new Date(2025, 0, 16, 14, 15),
-        updatedAt: new Date(2025, 0, 16, 14, 15),
-      },
-      {
-        id: 3,
-        number: "NISE-250003",
-        date: new Date(2025, 0, 17, 9, 45),
-        schoolId: 12,
-        school: { id: 12, name: "EM Paulo Freire", type: "EM" },
-        requester: "Diretora Ana Paula",
-        phone: "(11) 97788-2233",
-        type: "Furto",
-        priority: "Média",
-        description: "Roubados 2 notebooks da sala de informática durante o final de semana.",
-        team: "Equipe Tática Alpha",
-        status: "Concluído",
-        closingDate: new Date(2025, 0, 18, 11, 0),
-        closingResponsible: "Admin SME",
-        opinion: "Equipe realizou perícia. Boletim de ocorrência registrado. Câmeras serão instaladas.",
-        createdAt: new Date(2025, 0, 17, 9, 45),
-        updatedAt: new Date(2025, 0, 18, 11, 0),
-      }
-    ];
-    
-    setCalls(mockCalls);
+    fetch('/api/calls')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const parsed = data.map((c: any) => ({ ...c, date: new Date(c.date), createdAt: new Date(c.createdAt), updatedAt: new Date(c.updatedAt), closingDate: c.closingDate ? new Date(c.closingDate) : undefined }));
+          setCalls(parsed);
+        }
+      })
+      .catch(err => console.error('Error fetching calls:', err));
   }, []);
 
   const filteredCalls = calls.filter(call => {

@@ -33,29 +33,50 @@ export default function NewCallPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      toast.success('Ocorrência registrada com sucesso! Número: ' + callNumber);
-      
-      // Reset form
-      setFormData({
-        schoolId: '',
-        requester: '',
-        phone: '',
-        type: '',
-        priority: 'Média',
-        description: '',
-        team: '',
+    try {
+      const storedUser = localStorage.getItem('nise_user');
+      const user = storedUser ? JSON.parse(storedUser) : null;
+
+      const res = await fetch('/api/calls', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          schoolId: formData.schoolId ? Number(formData.schoolId) : null,
+          responsible: user?.name || null,
+          createdBy: user?.id || null,
+        }),
       });
-      setAttachments([]);
-      setCallNumber(generateCallNumber());
-      setIsSubmitting(false);
-      
-      // Redirect after success
-      setTimeout(() => {
-        window.location.href = '/calls';
-      }, 1500);
-    }, 1200);
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success('Ocorrência registrada com sucesso! Número: ' + data.call.number);
+
+        setFormData({
+          schoolId: '',
+          requester: '',
+          phone: '',
+          type: '',
+          priority: 'Média',
+          description: '',
+          team: '',
+        });
+        setAttachments([]);
+        setCallNumber(generateCallNumber());
+
+        setTimeout(() => {
+          window.location.href = '/calls';
+        }, 1500);
+      } else {
+        toast.error('Erro ao registrar ocorrência.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Erro ao conectar com o servidor.');
+    }
+
+    setIsSubmitting(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
