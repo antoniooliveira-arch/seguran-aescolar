@@ -15,14 +15,10 @@ const statusFlow: Record<string, { role: string; next: string; label: string; ic
     { role: 'operador_cftv', next: 'Em atendimento', label: 'Iniciar Atendimento', icon: Clock },
   ],
   'Em atendimento': [
-    { role: 'admin', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
     { role: 'tatico', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
-    { role: 'admin', next: 'Concluído', label: 'Concluir Ocorrência', icon: CheckCircle2 },
-    { role: 'tatico', next: 'Concluído', label: 'Concluir Ocorrência', icon: CheckCircle2 },
   ],
   'Aguardando parecer': [
     { role: 'admin', next: 'Concluído', label: 'Concluir Ocorrência', icon: CheckCircle2 },
-    { role: 'supervisor', next: 'Concluído', label: 'Concluir Ocorrência', icon: CheckCircle2 },
   ],
 };
 
