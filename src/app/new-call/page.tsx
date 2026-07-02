@@ -14,12 +14,12 @@ import toast from 'react-hot-toast';
 export default function NewCallPage() {
   const [formData, setFormData] = useState({
     schoolId: '',
-    requester: '',
+    requester: 'Supervisor',
     phone: '',
     type: '',
     priority: 'Média',
     description: '',
-    team: '',
+    team: 'Equipe Tatica Campo',
   });
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,21 +131,14 @@ export default function NewCallPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Solicitante</label>
                   <Input 
-                    placeholder="Nome completo do solicitante"
                     value={formData.requester}
                     onChange={(e) => setFormData({ ...formData, requester: e.target.value })}
+                    className="bg-slate-50"
                     required
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">Telefone de Contato</label>
-                  <Input 
-                    placeholder="(11) 99999-9999"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
+
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Tipo de Ocorrência</label>
@@ -176,9 +169,9 @@ export default function NewCallPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Equipe Responsável</label>
                   <Input 
-                    placeholder="Equipe Tática Alpha"
                     value={formData.team}
-                    onChange={(e) => setFormData({ ...formData, team: e.target.value })}
+                    className="bg-slate-50"
+                    readOnly
                   />
                 </div>
               </div>
