@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2, Clock, AlertTriangle, XCircle, Send } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, AlertTriangle, XCircle, Send, Save } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Call, User } from '@/types';
+import toast from 'react-hot-toast';
 
 const statusFlow: Record<string, { role: string; next: string; label: string; icon: any }[]> = {
   Aberto: [
@@ -30,7 +31,7 @@ export default function CallDetailPage() {
   const [opinion, setOpinion] = useState('');
   const [showOpinion, setShowOpinion] = useState(false);
   const [report, setReport] = useState('');
-  const [showReport, setShowReport] = useState(false);
+  const [savingReport, setSavingReport] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('nise_user');
@@ -47,11 +48,32 @@ export default function CallDetailPage() {
           const found = data.find((c: any) => c.id === Number(params.id));
           if (found) {
             setCall({ ...found, date: new Date(found.date), createdAt: new Date(found.createdAt), updatedAt: new Date(found.updatedAt), closingDate: found.closingDate ? new Date(found.closingDate) : undefined });
+            setReport(found.report || '');
           }
         }
       })
       .catch(err => console.error('Error fetching call:', err));
   }, [params.id]);
+
+  const saveReport = async () => {
+    if (!call) return;
+    setSavingReport(true);
+    try {
+      const res = await fetch(`/api/calls/${call.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ report }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCall(data.call);
+        toast.success('Relato salvo!');
+      }
+    } catch {
+      toast.error('Erro ao salvar relato.');
+    }
+    setSavingReport(false);
+  };
 
   const handleTransition = async (nextStatus: string) => {
     if (!call) return;
@@ -62,7 +84,7 @@ export default function CallDetailPage() {
       body.closingDate = new Date().toISOString();
       body.closingResponsible = user?.name;
     }
-    if ((nextStatus === 'Em atendimento' || nextStatus === 'Aguardando parecer') && report) {
+    if (nextStatus === 'Em atendimento' && report) {
       body.report = report;
     }
 
@@ -76,15 +98,15 @@ export default function CallDetailPage() {
       const data = await res.json();
       if (data.success) {
         setCall(data.call);
+        toast.success(`Status alterado para "${nextStatus}"`);
       }
     } catch (error) {
       console.error('Error updating call:', error);
+      toast.error('Erro ao atualizar chamado.');
     }
 
     setShowOpinion(false);
     setOpinion('');
-    setShowReport(false);
-    setReport('');
   };
 
   const getStatusBadge = (status: string) => {
@@ -113,6 +135,7 @@ export default function CallDetailPage() {
   if (!call) return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
 
   const availableActions = statusFlow[call.status]?.filter(a => a.role === user?.role) || [];
+  const canEditReport = user && (user.role === 'tatico' || user.role === 'admin') && call.status !== 'Concluído';
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -174,12 +197,29 @@ export default function CallDetailPage() {
                   <label className="text-xs uppercase tracking-widest text-slate-500">Descrição</label>
                   <p className="mt-1 text-slate-700 leading-relaxed">{call.description}</p>
                 </div>
-                {call.report && (
-                  <div className="md:col-span-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-500">Relato da Equipe</label>
+
+                {/* Relato da Equipe - always visible */}
+                <div className="md:col-span-2">
+                  <label className="text-xs uppercase tracking-widest text-slate-500">Relato da Equipe Tática</label>
+                  {canEditReport ? (
+                    <div className="space-y-2 mt-1">
+                      <textarea
+                        placeholder="Descreva o que foi constatado e as ações realizadas no local..."
+                        value={report}
+                        onChange={(e) => setReport(e.target.value)}
+                        className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm resize-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-colors"
+                      />
+                      <Button onClick={saveReport} disabled={savingReport} size="sm" className="flex items-center gap-2">
+                        <Save className="w-3.5 h-3.5" /> Salvar Relato
+                      </Button>
+                    </div>
+                  ) : call.report ? (
                     <p className="mt-1 text-slate-700 leading-relaxed bg-blue-50 rounded-xl p-4 border border-blue-100">{call.report}</p>
-                  </div>
-                )}
+                  ) : (
+                    <p className="mt-1 text-slate-400 italic">Nenhum relato registrado.</p>
+                  )}
+                </div>
+
                 {call.opinion && (
                   <div className="md:col-span-2">
                     <label className="text-xs uppercase tracking-widest text-slate-500">Parecer Final</label>
@@ -204,28 +244,7 @@ export default function CallDetailPage() {
               <CardContent className="space-y-4">
                 {availableActions.map((action) => (
                   <div key={action.next}>
-                    {(action.next === 'Em atendimento' || action.next === 'Aguardando parecer') && !showReport ? (
-                      <Button onClick={() => setShowReport(true)} className="flex items-center gap-2">
-                        <Send className="w-4 h-4" /> {action.next === 'Em atendimento' ? 'Registrar Ocorrido' : 'Solicitar Parecer'}
-                      </Button>
-                    ) : (action.next === 'Em atendimento' || action.next === 'Aguardando parecer') && showReport ? (
-                      <div className="space-y-3">
-                        <textarea
-                          placeholder="Descreva o que foi feito e o que foi constatado..."
-                          value={report}
-                          onChange={(e) => setReport(e.target.value)}
-                          className="w-full h-24 px-4 py-3 border border-slate-200 rounded-xl text-sm resize-none"
-                        />
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleTransition(action.next)} disabled={!report.trim()} className="flex items-center gap-2">
-                            <Send className="w-4 h-4" /> {action.label}
-                          </Button>
-                          <Button variant="outline" onClick={() => { setShowReport(false); setReport(''); }}>
-                            Cancelar
-                          </Button>
-                        </div>
-                      </div>
-                    ) : action.next === 'Concluído' && !showOpinion ? (
+                    {action.next === 'Concluído' && !showOpinion ? (
                       <Button onClick={() => setShowOpinion(true)} className="flex items-center gap-2">
                         <action.icon className="w-4 h-4" /> {action.label}
                       </Button>
