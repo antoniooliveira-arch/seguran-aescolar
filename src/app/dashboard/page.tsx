@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   AlertTriangle, Clock, CheckCircle2, Users, School as SchoolIcon, 
-  Plus, FileText, LogOut, Menu, X, BarChart3, Shield 
+  Plus, FileText, LogOut, Menu, X, Shield, BarChart3 
 } from 'lucide-react';
 import Link from 'next/link';
 import { Call, User, UserRole, ROLE_LABELS } from '@/types';
@@ -92,10 +92,16 @@ export default function Dashboard() {
               Escolas
             </Link>
             {user.role === 'admin' && (
-              <Link href="/users" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
-                <Users className="w-4 h-4" />
-                Usuários
-              </Link>
+              <>
+                <Link href="/reports" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
+                  <BarChart3 className="w-4 h-4" />
+                  Relatórios
+                </Link>
+                <Link href="/users" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
+                  <Users className="w-4 h-4" />
+                  Usuários
+                </Link>
+              </>
             )}
           </nav>
         </div>
