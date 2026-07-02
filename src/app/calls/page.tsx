@@ -9,11 +9,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Call } from '@/types';
+import { Call, User } from '@/types';
 import { ArrowLeft, Eye, Filter, Plus } from 'lucide-react';
 
 function CallsContent() {
   const searchParams = useSearchParams();
+  const [user, setUser] = useState<User | null>(null);
   const [calls, setCalls] = useState<Call[]>([]);
   const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,6 +22,13 @@ function CallsContent() {
   const [priorityFilter, setPriorityFilter] = useState('all');
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('nise_user');
+    if (!storedUser) {
+      window.location.href = '/';
+      return;
+    }
+    setUser(JSON.parse(storedUser));
+
     const mockCalls: Call[] = [
       {
         id: 1,
@@ -98,6 +106,10 @@ function CallsContent() {
 
   useEffect(() => {
     let result = [...calls];
+
+    if (user?.role === 'operator') {
+      result = result.filter(c => c.status === 'Aberto' || c.responsible === user.name);
+    }
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
