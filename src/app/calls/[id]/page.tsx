@@ -28,6 +28,8 @@ export default function CallDetailPage() {
   const [call, setCall] = useState<Call | null>(null);
   const [opinion, setOpinion] = useState('');
   const [showOpinion, setShowOpinion] = useState(false);
+  const [report, setReport] = useState('');
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('nise_user');
@@ -59,6 +61,9 @@ export default function CallDetailPage() {
       body.closingDate = new Date().toISOString();
       body.closingResponsible = user?.name;
     }
+    if (nextStatus === 'Aguardando parecer' && report) {
+      body.report = report;
+    }
 
     try {
       const res = await fetch(`/api/calls/${call.id}`, {
@@ -77,6 +82,8 @@ export default function CallDetailPage() {
 
     setShowOpinion(false);
     setOpinion('');
+    setShowReport(false);
+    setReport('');
   };
 
   const getStatusBadge = (status: string) => {
@@ -166,9 +173,15 @@ export default function CallDetailPage() {
                   <label className="text-xs uppercase tracking-widest text-slate-500">Descrição</label>
                   <p className="mt-1 text-slate-700 leading-relaxed">{call.description}</p>
                 </div>
+                {call.report && (
+                  <div className="md:col-span-2">
+                    <label className="text-xs uppercase tracking-widest text-slate-500">Relato da Equipe</label>
+                    <p className="mt-1 text-slate-700 leading-relaxed bg-blue-50 rounded-xl p-4 border border-blue-100">{call.report}</p>
+                  </div>
+                )}
                 {call.opinion && (
                   <div className="md:col-span-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-500">Parecer</label>
+                    <label className="text-xs uppercase tracking-widest text-slate-500">Parecer Final</label>
                     <p className="mt-1 text-slate-700 leading-relaxed bg-slate-50 rounded-xl p-4 border">{call.opinion}</p>
                     {call.closingResponsible && (
                       <p className="text-xs text-slate-400 mt-2">
@@ -190,7 +203,28 @@ export default function CallDetailPage() {
               <CardContent className="space-y-4">
                 {availableActions.map((action) => (
                   <div key={action.next}>
-                    {action.next === 'Concluído' && !showOpinion ? (
+                    {action.next === 'Aguardando parecer' && !showReport ? (
+                      <Button onClick={() => setShowReport(true)} className="flex items-center gap-2">
+                        <Send className="w-4 h-4" /> Descrever Ocorrido
+                      </Button>
+                    ) : action.next === 'Aguardando parecer' && showReport ? (
+                      <div className="space-y-3">
+                        <textarea
+                          placeholder="Descreva o que foi feito e o que foi constatado..."
+                          value={report}
+                          onChange={(e) => setReport(e.target.value)}
+                          className="w-full h-24 px-4 py-3 border border-slate-200 rounded-xl text-sm resize-none"
+                        />
+                        <div className="flex gap-2">
+                          <Button onClick={() => handleTransition(action.next)} disabled={!report.trim()} className="flex items-center gap-2">
+                            <Send className="w-4 h-4" /> Solicitar Parecer
+                          </Button>
+                          <Button variant="outline" onClick={() => { setShowReport(false); setReport(''); }}>
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : action.next === 'Concluído' && !showOpinion ? (
                       <Button onClick={() => setShowOpinion(true)} className="flex items-center gap-2">
                         <action.icon className="w-4 h-4" /> {action.label}
                       </Button>

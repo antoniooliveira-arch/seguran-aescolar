@@ -47,6 +47,7 @@ export const calls = pgTable("calls", {
     enum: ["Aberto", "Em análise", "Encaminhado", "Em atendimento", "Aguardando parecer", "Concluído", "Cancelado"] 
   }).notNull().default("Aberto"),
   responsible: text("responsible"),
+  report: text("report"),
   closingDate: timestamp("closing_date"),
   closingResponsible: text("closing_responsible"),
   opinion: text("opinion"),

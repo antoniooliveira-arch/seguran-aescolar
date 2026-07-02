@@ -12,6 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const updateData: Record<string, any> = {};
     if (body.status) updateData.status = body.status;
+    if (body.report) updateData.report = body.report;
     if (body.opinion) updateData.opinion = body.opinion;
     if (body.closingDate) updateData.closingDate = new Date(body.closingDate);
     if (body.closingResponsible) updateData.closingResponsible = body.closingResponsible;
