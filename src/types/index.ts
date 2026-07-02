@@ -40,6 +40,7 @@ export interface Call {
   closingDate?: Date;
   closingResponsible?: string;
   report?: string;
+  adminReport?: string;
   opinion?: string;
   createdBy?: number;
   createdAt: Date;

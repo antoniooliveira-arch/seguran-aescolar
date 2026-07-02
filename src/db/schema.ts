@@ -48,6 +48,7 @@ export const calls = pgTable("calls", {
   }).notNull().default("Aberto"),
   responsible: text("responsible"),
   report: text("report"),
+  adminReport: text("admin_report"),
   closingDate: timestamp("closing_date"),
   closingResponsible: text("closing_responsible"),
   opinion: text("opinion"),

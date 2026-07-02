@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2, Clock, AlertTriangle, XCircle, Send, Save } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, AlertTriangle, XCircle, Send, Save, FileEdit } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
@@ -15,9 +15,11 @@ const statusFlow: Record<string, { role: string; next: string; label: string; ic
   Aberto: [
     { role: 'operador_cftv', next: 'Em atendimento', label: 'Iniciar Atendimento', icon: Clock },
     { role: 'tatico', next: 'Em atendimento', label: 'Atender Ocorrência', icon: Clock },
+    { role: 'admin', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
   ],
   'Em atendimento': [
     { role: 'tatico', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
+    { role: 'admin', next: 'Aguardando parecer', label: 'Solicitar Parecer', icon: Send },
   ],
   'Aguardando parecer': [
     { role: 'admin', next: 'Concluído', label: 'Concluir Ocorrência', icon: CheckCircle2 },
@@ -32,6 +34,8 @@ export default function CallDetailPage() {
   const [showOpinion, setShowOpinion] = useState(false);
   const [report, setReport] = useState('');
   const [savingReport, setSavingReport] = useState(false);
+  const [adminReport, setAdminReport] = useState('');
+  const [savingAdminReport, setSavingAdminReport] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('nise_user');
@@ -49,6 +53,7 @@ export default function CallDetailPage() {
           if (found) {
             setCall({ ...found, date: new Date(found.date), createdAt: new Date(found.createdAt), updatedAt: new Date(found.updatedAt), closingDate: found.closingDate ? new Date(found.closingDate) : undefined });
             setReport(found.report || '');
+            setAdminReport(found.adminReport || '');
           }
         }
       })
@@ -73,6 +78,26 @@ export default function CallDetailPage() {
       toast.error('Erro ao salvar relato.');
     }
     setSavingReport(false);
+  };
+
+  const saveAdminReport = async () => {
+    if (!call) return;
+    setSavingAdminReport(true);
+    try {
+      const res = await fetch(`/api/calls/${call.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminReport }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCall(data.call);
+        toast.success('Observações salvas!');
+      }
+    } catch {
+      toast.error('Erro ao salvar observações.');
+    }
+    setSavingAdminReport(false);
   };
 
   const handleTransition = async (nextStatus: string) => {
@@ -136,6 +161,7 @@ export default function CallDetailPage() {
 
   const availableActions = statusFlow[call.status]?.filter(a => a.role === user?.role) || [];
   const canEditReport = user && (user.role === 'tatico' || user.role === 'admin') && call.status !== 'Concluído';
+  const canEditAdminReport = user && user.role === 'admin' && call.status !== 'Concluído';
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -198,7 +224,7 @@ export default function CallDetailPage() {
                   <p className="mt-1 text-slate-700 leading-relaxed">{call.description}</p>
                 </div>
 
-                {/* Relato da Equipe - always visible */}
+                {/* Relato da Equipe Tática */}
                 <div className="md:col-span-2">
                   <label className="text-xs uppercase tracking-widest text-slate-500">Relato da Equipe Tática</label>
                   {canEditReport ? (
@@ -217,6 +243,28 @@ export default function CallDetailPage() {
                     <p className="mt-1 text-slate-700 leading-relaxed bg-blue-50 rounded-xl p-4 border border-blue-100">{call.report}</p>
                   ) : (
                     <p className="mt-1 text-slate-400 italic">Nenhum relato registrado.</p>
+                  )}
+                </div>
+
+                {/* Observações do Administrador */}
+                <div className="md:col-span-2">
+                  <label className="text-xs uppercase tracking-widest text-slate-500">Observações do Administrador</label>
+                  {canEditAdminReport ? (
+                    <div className="space-y-2 mt-1">
+                      <textarea
+                        placeholder="Registre aqui suas observações sobre o relato da equipe e a ocorrência..."
+                        value={adminReport}
+                        onChange={(e) => setAdminReport(e.target.value)}
+                        className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm resize-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 outline-none transition-colors"
+                      />
+                      <Button onClick={saveAdminReport} disabled={savingAdminReport} size="sm" className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
+                        <Save className="w-3.5 h-3.5" /> Salvar Observações
+                      </Button>
+                    </div>
+                  ) : call.adminReport ? (
+                    <p className="mt-1 text-slate-700 leading-relaxed bg-purple-50 rounded-xl p-4 border border-purple-100">{call.adminReport}</p>
+                  ) : (
+                    <p className="mt-1 text-slate-400 italic">Nenhuma observação registrada.</p>
                   )}
                 </div>
 
