@@ -15,7 +15,7 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  role: text("role", { enum: ["admin", "supervisor", "operator"] }).notNull().default("operator"),
+  role: text("role", { enum: ["admin", "supervisor", "tatico", "operador_cftv"] }).notNull().default("operador_cftv"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

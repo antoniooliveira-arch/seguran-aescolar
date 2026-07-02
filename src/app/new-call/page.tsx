@@ -55,12 +55,12 @@ export default function NewCallPage() {
 
         setFormData({
           schoolId: '',
-          requester: '',
+          requester: 'Supervisor',
           phone: '',
           type: '',
           priority: 'Média',
           description: '',
-          team: '',
+          team: 'Equipe Tatica Campo',
         });
         setAttachments([]);
         setCallNumber(generateCallNumber());

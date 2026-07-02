@@ -23,8 +23,9 @@ export default function LoginPage() {
 
   const demoCredentials = [
     { username: 'admin', name: 'Administrador', role: 'Administrador' },
-    { username: 'supervisor', name: 'Supervisor Tático', role: 'Supervisor' },
-    { username: 'operador', name: 'Operador Campo', role: 'Operador' },
+    { username: 'supervisor', name: 'Supervisor', role: 'Supervisor' },
+    { username: 'tatico', name: 'Tático', role: 'Tático' },
+    { username: 'operador', name: 'Operador de CFTV', role: 'Operador CFTV' },
   ];
 
   useEffect(() => {
@@ -53,7 +54,8 @@ export default function LoginPage() {
         name: foundUser.name,
         username: foundUser.username,
         role: foundUser.role.toLowerCase().includes('admin') ? 'admin' : 
-              foundUser.role.toLowerCase().includes('supervisor') ? 'supervisor' : 'operator'
+              foundUser.role.toLowerCase().includes('supervisor') ? 'supervisor' : 
+              foundUser.role.toLowerCase().includes('tático') ? 'tatico' : 'operador_cftv'
       }));
       
       setTimeout(() => {

@@ -44,8 +44,8 @@ function CallsContent() {
   useEffect(() => {
     let result = [...calls];
 
-    if (user?.role === 'operator') {
-      result = result.filter(c => c.status === 'Aberto' || c.responsible === user.name);
+    if (user?.role === 'operador_cftv') {
+      result = result.filter(c => c.status === 'Aberto');
     }
 
     if (searchTerm) {
@@ -186,7 +186,7 @@ function CallsContent() {
                   <td className="py-6 px-4 text-sm text-slate-600">{call.responsible || '—'}</td>
                   <td className="py-6 px-4">
                     <div className="flex items-center gap-2">
-                      {user?.role === 'operator' && call.status === 'Aberto' && (
+                      {user?.role === 'operador_cftv' && call.status === 'Aberto' && (
                         <Link href={`/calls/${call.id}`} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
                           Registrar
                         </Link>

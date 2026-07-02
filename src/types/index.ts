@@ -1,4 +1,11 @@
-export type UserRole = "admin" | "supervisor" | "operator";
+export type UserRole = "admin" | "supervisor" | "tatico" | "operador_cftv";
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  admin: "Administrador",
+  supervisor: "Supervisor",
+  tatico: "Tático",
+  operador_cftv: "Operador de CFTV",
+};
 
 export interface User {
   id: number;

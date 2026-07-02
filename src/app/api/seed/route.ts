@@ -29,23 +29,29 @@ export async function GET() {
         role: 'admin' as const,
       },
       {
-        name: 'Supervisor Tático',
+        name: 'Supervisor',
         email: 'supervisor@sme.gov.br',
         passwordHash: hashedPassword,
         role: 'supervisor' as const,
       },
       {
-        name: 'Operador Campo',
+        name: 'Tático',
+        email: 'tatico@sme.gov.br',
+        passwordHash: hashedPassword,
+        role: 'tatico' as const,
+      },
+      {
+        name: 'Operador de CFTV',
         email: 'operador@sme.gov.br',
         passwordHash: hashedPassword,
-        role: 'operator' as const,
+        role: 'operador_cftv' as const,
       },
     ]);
     console.log('Users seeded');
 
     // Get first school and user
     const firstSchool = await db.select().from(schools).limit(1);
-    const firstUser = await db.select().from(users).where(eq(users.role, 'operator')).limit(1);
+    const firstUser = await db.select().from(users).limit(1);
 
     if (firstSchool.length > 0 && firstUser.length > 0) {
       // Create a demo call
@@ -60,7 +66,7 @@ export async function GET() {
         description: 'Pichação e quebra de vidros na fachada da escola durante a madrugada.',
         team: 'Equipe Tática Alpha',
         status: 'Aberto',
-        responsible: 'Operador Campo',
+        responsible: 'Supervisor',
         createdBy: firstUser[0].id,
       });
       console.log('Demo call created');

@@ -8,7 +8,7 @@ import {
   Plus, FileText, LogOut, Menu, X, BarChart3, Shield 
 } from 'lucide-react';
 import Link from 'next/link';
-import { Call, User } from '@/types';
+import { Call, User, UserRole, ROLE_LABELS } from '@/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -85,7 +85,7 @@ export default function Dashboard() {
             </Link>
             <Link href="/new-call" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
               <Plus className="w-4 h-4" />
-              {user.role === 'operator' ? 'Registrar Ocorrência' : 'Nova Ocorrência'}
+              {user.role === 'operador_cftv' ? 'Registrar Ocorrência' : 'Nova Ocorrência'}
             </Link>
             <Link href="/schools" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
               <SchoolIcon className="w-4 h-4" />
@@ -107,7 +107,7 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 overflow-hidden">
               <div className="font-medium text-sm truncate">{user.name}</div>
-              <div className="text-xs text-slate-500 capitalize">{user.role}</div>
+              <div className="text-xs text-slate-500">{ROLE_LABELS[user.role as UserRole] || user.role}</div>
             </div>
           </div>
           
