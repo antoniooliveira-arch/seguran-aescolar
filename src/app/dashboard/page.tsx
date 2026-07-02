@@ -41,7 +41,7 @@ export default function Dashboard() {
         description: "Pichação nas paredes externas e quebra de 3 vidros.",
         team: "Equipe Tática Alpha",
         status: "Em atendimento",
-        responsible: "Admin SME",
+        responsible: "Supervisor Tático",
         createdAt: new Date(2025, 0, 15, 8, 30),
         updatedAt: new Date(2025, 0, 15, 8, 30),
       },
@@ -127,6 +127,10 @@ export default function Dashboard() {
 
         <div className="px-3 py-6 flex-1 overflow-auto">
           <nav className="space-y-1">
+            <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-blue-50 text-blue-700 rounded-2xl">
+              <BarChart3 className="w-4 h-4" />
+              Dashboard
+            </Link>
             <Link href="/calls" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
               <FileText className="w-4 h-4" />
               Chamados
@@ -135,12 +139,20 @@ export default function Dashboard() {
               <Plus className="w-4 h-4" />
               Nova Ocorrência
             </Link>
+            <Link href="/schools" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
+              <SchoolIcon className="w-4 h-4" />
+              Escolas
+            </Link>
             {user.role === 'admin' && (
               <Link href="/users" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
                 <Users className="w-4 h-4" />
                 Usuários
               </Link>
             )}
+            <Link href="/reports" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
+              <BarChart3 className="w-4 h-4" />
+              Relatórios
+            </Link>
           </nav>
         </div>
 

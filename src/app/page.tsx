@@ -23,6 +23,8 @@ export default function LoginPage() {
 
   const demoCredentials = [
     { username: 'admin', name: 'Administrador', role: 'Administrador' },
+    { username: 'supervisor', name: 'Supervisor Tático', role: 'Supervisor' },
+    { username: 'operador', name: 'Operador Campo', role: 'Operador' },
   ];
 
   useEffect(() => {
@@ -50,7 +52,8 @@ export default function LoginPage() {
         id: 1,
         name: foundUser.name,
         username: foundUser.username,
-        role: 'admin'
+        role: foundUser.role.toLowerCase().includes('admin') ? 'admin' : 
+              foundUser.role.toLowerCase().includes('supervisor') ? 'supervisor' : 'operator'
       }));
       
       setTimeout(() => {
@@ -187,7 +190,9 @@ export default function LoginPage() {
               ))}
             </div>
             
-
+            <div className="text-center mt-8 text-[10px] text-slate-400">
+              Usuário <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">admin</span> • Senha <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">123</span>
+            </div>
           </div>
 
           <div className="text-center text-[10px] text-slate-400 mt-10">

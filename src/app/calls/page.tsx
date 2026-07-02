@@ -33,7 +33,7 @@ export default function CallsPage() {
         description: "Pichação nas paredes externas e quebra de 3 vidros.",
         team: "Equipe Tática Alpha",
         status: "Em atendimento",
-        responsible: "Admin SME",
+        responsible: "Supervisor Tático",
         createdAt: new Date(2025, 0, 15, 8, 30),
         updatedAt: new Date(2025, 0, 15, 8, 30),
       },
