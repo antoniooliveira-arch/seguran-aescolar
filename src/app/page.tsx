@@ -48,20 +48,18 @@ export default function LoginPage() {
     const foundUser = demoCredentials.find(u => u.username === username);
     
     if (foundUser && password === '123') {
-      const role = foundUser.role.toLowerCase().includes('admin') ? 'admin' : 
-        foundUser.role.toLowerCase().includes('supervisor') ? 'supervisor' : 
-        foundUser.role.toLowerCase().includes('tático') ? 'tatico' : 'operador_cftv';
-
       // Store user in localStorage for demo
       localStorage.setItem('nise_user', JSON.stringify({
         id: 1,
         name: foundUser.name,
         username: foundUser.username,
-        role
+        role: foundUser.role.toLowerCase().includes('admin') ? 'admin' : 
+              foundUser.role.toLowerCase().includes('supervisor') ? 'supervisor' : 
+              foundUser.role.toLowerCase().includes('tático') ? 'tatico' : 'operador_cftv'
       }));
       
       setTimeout(() => {
-        window.location.href = role === 'tatico' || role === 'operador_cftv' ? '/calls' : '/dashboard';
+        window.location.href = '/dashboard';
       }, 800);
     } else {
       setMessage('Credenciais inválidas. Use usuário "admin" e senha "123" para acessar como administrador.');

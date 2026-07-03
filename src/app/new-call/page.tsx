@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Upload, X, Camera } from 'lucide-react';
 import Link from 'next/link';
 import { generateCallNumber } from '@/lib/utils';
-import { SCHOOLS_SEED, OCCURRENCE_TYPES, PRIORITIES, User } from '@/types';
+import { SCHOOLS_SEED, OCCURRENCE_TYPES, PRIORITIES } from '@/types';
 import toast from 'react-hot-toast';
 
 export default function NewCallPage() {
@@ -24,13 +24,8 @@ export default function NewCallPage() {
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [callNumber, setCallNumber] = useState('');
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('nise_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
     setCallNumber(generateCallNumber());
   }, []);
 
@@ -99,7 +94,7 @@ export default function NewCallPage() {
     <div className="min-h-screen bg-slate-100">
       <div className="max-w-4xl mx-auto py-10 px-6">
         <div className="flex items-center gap-4 mb-8">
-          <Link href={user?.role === 'tatico' || user?.role === 'operador_cftv' ? '/calls' : '/dashboard'} className="flex items-center gap-2 text-slate-500 hover:text-slate-700">
+          <Link href="/dashboard" className="flex items-center gap-2 text-slate-500 hover:text-slate-700">
             <ArrowLeft className="w-5 h-5" /> Voltar
           </Link>
           <div className="h-5 w-px bg-slate-300" />

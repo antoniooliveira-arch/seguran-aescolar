@@ -100,13 +100,11 @@ function CallsContent() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        {user && user.role !== 'tatico' && user.role !== 'operador_cftv' && (
-          <div className="flex items-center gap-4 mb-2">
-            <Link href="/dashboard" className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Voltar
-            </Link>
-          </div>
-        )}
+        <div className="flex items-center gap-4 mb-2">
+          <Link href="/dashboard" className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Voltar
+          </Link>
+        </div>
         <div className="flex justify-between items-end mb-8">
           <div>
             <div className="flex items-center gap-3">

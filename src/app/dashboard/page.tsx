@@ -24,12 +24,7 @@ export default function Dashboard() {
       window.location.href = '/';
       return;
     }
-    const parsedUser = JSON.parse(storedUser);
-    if (parsedUser.role === 'tatico' || parsedUser.role === 'operador_cftv') {
-      window.location.href = '/calls';
-      return;
-    }
-    setUser(parsedUser);
+    setUser(JSON.parse(storedUser));
 
     fetch('/api/calls')
       .then(res => res.json())
