@@ -149,16 +149,7 @@ function CallsContent() {
                   <option value="Concluído">Concluído</option>
                 </Select>
               </div>
-              <div className="w-full md:w-52">
-                <Select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-                  <option value="all">Todas Prioridades</option>
-                  <option value="Urgente">Urgente</option>
-                  <option value="Alta">Alta</option>
-                  <option value="Média">Média</option>
-                  <option value="Baixa">Baixa</option>
-                </Select>
-              </div>
-              <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap">
+              <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap" onClick={() => { setSearchTerm(''); setStatusFilter('all'); }}>
                 <Filter className="w-4 h-4" /> Limpar Filtros
               </Button>
             </div>
@@ -171,19 +162,21 @@ function CallsContent() {
               <tr className="border-b bg-slate-50">
                 <th className="text-left py-5 px-8 font-medium text-xs uppercase tracking-widest text-slate-500">Número</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Escola</th>
+                <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Op. CFTV</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Tipo</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Data</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Status</th>
-                <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Prioridade</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Responsável</th>
+                <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição</th>
                 <th className="w-20"></th>
               </tr>
             </thead>
             <tbody>
-              {filteredCalls.map((call) => (
+              {filteredCalls.map((call: any) => (
                 <tr key={call.id} className="border-b last:border-none hover:bg-slate-50 transition-colors">
                   <td className="py-6 px-8 font-mono text-sm font-medium text-slate-900">{call.number}</td>
                   <td className="py-6 px-4 text-sm">{call.school?.name}</td>
+                  <td className="py-6 px-4 text-sm text-slate-600">{call.creator?.name || '—'}</td>
                   <td className="py-6 px-4 text-sm text-slate-600">{call.type}</td>
                   <td className="py-6 px-4 text-sm text-slate-500">
                     {format(call.date, "dd/MM/yyyy HH:mm", { locale: ptBR })}
@@ -193,14 +186,8 @@ function CallsContent() {
                       {call.status}
                     </span>
                   </td>
-                  <td className="py-6 px-4">
-                    <span className={`text-xs px-3 py-1 rounded font-medium
-                      ${call.priority === 'Urgente' ? 'bg-red-100 text-red-700' : 
-                        call.priority === 'Alta' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {call.priority}
-                    </span>
-                  </td>
                   <td className="py-6 px-4 text-sm text-slate-600">{call.responsible || '—'}</td>
+                  <td className="py-6 px-4 text-sm text-slate-500 max-w-[200px] truncate">{call.description}</td>
                   <td className="py-6 px-4">
                     <div className="flex items-center gap-2">
                       {user?.role === 'operador_cftv' && call.status === 'Aberto' && (
