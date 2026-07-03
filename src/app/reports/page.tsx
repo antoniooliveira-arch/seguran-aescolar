@@ -25,7 +25,12 @@ export default function ReportsPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem('nise_user');
     if (!storedUser) { window.location.href = '/'; return; }
-    setUser(JSON.parse(storedUser));
+    const parsedUser = JSON.parse(storedUser);
+    if (parsedUser.role !== 'admin' && parsedUser.role !== 'supervisor') {
+      window.location.href = '/dashboard';
+      return;
+    }
+    setUser(parsedUser);
   }, []);
 
   useEffect(() => {
@@ -57,7 +62,9 @@ export default function ReportsPage() {
     if (schoolFilter !== 'all') {
       result = result.filter(c => c.school?.name === schoolFilter);
     }
-    if (roleFilter !== 'all') {
+    if (roleFilter === 'tatico_admin') {
+      result = result.filter(c => c.creator?.role === 'tatico' || c.creator?.role === 'admin');
+    } else if (roleFilter !== 'all') {
       result = result.filter(c => c.creator?.role === roleFilter);
     }
     setFilteredCalls(result);
@@ -94,7 +101,8 @@ export default function ReportsPage() {
           .filters strong { color: #333; }
           table { width: 100%; border-collapse: collapse; margin-top: 8px; }
           th { background: #1e40af; color: white; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
-          td { padding: 7px 10px; border-bottom: 1px solid #ddd; font-size: 11px; }
+          td { padding: 7px 10px; border-bottom: 1px solid #ddd; font-size: 11px; vertical-align: top; }
+          .notes { white-space: pre-wrap; line-height: 1.4; }
           tr:nth-child(even) { background: #f8fafc; }
           .footer { text-align: center; font-size: 10px; color: #999; margin-top: 32px; border-top: 1px solid #ddd; padding-top: 12px; }
           .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
@@ -149,13 +157,29 @@ export default function ReportsPage() {
     operador_cftv: 'bg-emerald-100 text-emerald-700',
   };
 
-  const total = filteredCalls.length;
-  const abertos = filteredCalls.filter(c => c.status === 'Aberto').length;
-  const emAtendimento = filteredCalls.filter(c => c.status === 'Em atendimento').length;
-  const concluidos = filteredCalls.filter(c => c.status === 'Concluído').length;
-  const totalOperador = filteredCalls.filter(c => c.creator?.role === 'operador_cftv').length;
-  const totalTatico = filteredCalls.filter(c => c.creator?.role === 'tatico').length;
-  const totalAdmin = filteredCalls.filter(c => c.creator?.role === 'admin').length;
+  const periodCalls = calls.filter(c => {
+    if (dateStart && new Date(c.date) < new Date(dateStart)) return false;
+    if (dateEnd) {
+      const end = new Date(dateEnd);
+      end.setHours(23, 59, 59, 999);
+      if (new Date(c.date) > end) return false;
+    }
+    if (schoolFilter !== 'all' && c.school?.name !== schoolFilter) return false;
+    return true;
+  });
+
+  const total = periodCalls.length;
+  const abertos = periodCalls.filter(c => c.status === 'Aberto').length;
+  const emAtendimento = periodCalls.filter(c => c.status === 'Em atendimento').length;
+  const concluidos = periodCalls.filter(c => c.status === 'Concluído').length;
+  const totalOperador = periodCalls.filter(c => c.creator?.role === 'operador_cftv').length;
+  const totalTatico = periodCalls.filter(c => c.creator?.role === 'tatico').length;
+  const totalAdmin = periodCalls.filter(c => c.creator?.role === 'admin').length;
+
+  const applySummaryFilter = (status: string, role: string = 'all') => {
+    setStatusFilter(status);
+    setRoleFilter(role);
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -211,33 +235,34 @@ export default function ReportsPage() {
               <option value="operador_cftv">Operador de CFTV</option>
               <option value="tatico">Tático</option>
               <option value="admin">Administrador</option>
+              <option value="tatico_admin">Tático + Admin</option>
             </Select>
           </div>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-6 gap-4 mb-6">
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('all')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-blue-700">{total}</div>
             <div className="text-xs text-slate-500 uppercase">Total</div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('Aberto')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-amber-600">{abertos}</div>
             <div className="text-xs text-slate-500 uppercase">Abertos</div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('Em atendimento')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-indigo-600">{emAtendimento}</div>
             <div className="text-xs text-slate-500 uppercase">Atendimento</div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('Concluído')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-emerald-600">{concluidos}</div>
             <div className="text-xs text-slate-500 uppercase">Concluídos</div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('all', 'operador_cftv')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-emerald-700">{totalOperador}</div>
             <div className="text-xs text-slate-500 uppercase">CFTV</div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 text-center">
+          <Card onClick={() => applySummaryFilter('all', 'tatico_admin')} className="cursor-pointer hover:shadow-md transition-shadow"><CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-purple-700">{totalTatico + totalAdmin}</div>
             <div className="text-xs text-slate-500 uppercase">Tático + Admin</div>
           </CardContent></Card>
@@ -262,14 +287,16 @@ export default function ReportsPage() {
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Tipo</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Status</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Registrado por</th>
+                    <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição OP. CFTV</th>
+                    <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição Tático</th>
                     <th className="text-right py-4 px-6 font-medium text-xs uppercase tracking-widest text-slate-500">Equipe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={7} className="p-20 text-center text-slate-400">Carregando...</td></tr>
+                    <tr><td colSpan={9} className="p-20 text-center text-slate-400">Carregando...</td></tr>
                   ) : filteredCalls.length === 0 ? (
-                    <tr><td colSpan={7} className="p-20 text-center text-slate-400">Nenhum registro encontrado.</td></tr>
+                    <tr><td colSpan={9} className="p-20 text-center text-slate-400">Nenhum registro encontrado.</td></tr>
                   ) : (
                     filteredCalls.map((call) => (
                       <tr key={call.id} className="border-b last:border-none hover:bg-slate-50 transition-colors">
@@ -287,6 +314,8 @@ export default function ReportsPage() {
                             {ROLE_LABELS[call.creator?.role as keyof typeof ROLE_LABELS] || call.creator?.name || '—'}
                           </span>
                         </td>
+                        <td className="py-4 px-3 text-sm text-slate-600 whitespace-pre-wrap max-w-[240px]">{call.description || '—'}</td>
+                        <td className="py-4 px-3 text-sm text-slate-600 whitespace-pre-wrap max-w-[240px]">{call.report || '—'}</td>
                         <td className="py-4 px-6 text-sm text-right">{call.team || '—'}</td>
                       </tr>
                     ))

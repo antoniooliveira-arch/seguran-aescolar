@@ -97,12 +97,14 @@ export default function Dashboard() {
               <SchoolIcon className="w-4 h-4" />
               Escolas
             </Link>
-            {user.role === 'admin' && (
-              <>
+            {(user.role === 'admin' || user.role === 'supervisor') && (
                 <Link href="/reports" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
                   <BarChart3 className="w-4 h-4" />
                   Relatórios
                 </Link>
+            )}
+            {user.role === 'admin' && (
+              <>
                 <Link href="/users" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-2xl">
                   <Users className="w-4 h-4" />
                   Usuários
