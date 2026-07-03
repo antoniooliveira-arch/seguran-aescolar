@@ -9,6 +9,7 @@ import { LogIn, Shield, Users, BarChart3, School } from 'lucide-react';
 import Link from 'next/link';
 
 interface DemoUser {
+  id: number;
   username: string;
   name: string;
   role: string;
@@ -22,10 +23,10 @@ export default function LoginPage() {
   const [demoUsers, setDemoUsers] = useState<DemoUser[]>([]);
 
   const demoCredentials = [
-    { username: 'admin', name: 'Administrador', role: 'Administrador' },
-    { username: 'supervisor', name: 'Supervisor', role: 'Supervisor' },
-    { username: 'tatico', name: 'Tático', role: 'Tático' },
-    { username: 'operador', name: 'Operador de CFTV', role: 'Operador CFTV' },
+    { id: 1, username: 'admin', name: 'Administrador', role: 'Administrador' },
+    { id: 2, username: 'supervisor', name: 'Supervisor', role: 'Supervisor' },
+    { id: 3, username: 'tatico', name: 'Tático', role: 'Tático' },
+    { id: 4, username: 'operador', name: 'Operador de CFTV', role: 'Operador CFTV' },
   ];
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function LoginPage() {
     if (foundUser && password === '123') {
       // Store user in localStorage for demo
       localStorage.setItem('nise_user', JSON.stringify({
-        id: 1,
+        id: foundUser.id,
         name: foundUser.name,
         username: foundUser.username,
         role: foundUser.role.toLowerCase().includes('admin') ? 'admin' : 

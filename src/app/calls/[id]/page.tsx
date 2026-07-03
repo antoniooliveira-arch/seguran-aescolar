@@ -112,6 +112,10 @@ export default function CallDetailPage() {
     if (nextStatus === 'Em atendimento' && report) {
       body.report = report;
     }
+    if (user?.role === 'tatico') {
+      body.responsible = user.name;
+      if (report) body.report = report;
+    }
 
     try {
       const res = await fetch(`/api/calls/${call.id}`, {

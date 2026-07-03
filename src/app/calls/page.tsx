@@ -164,6 +164,7 @@ function CallsContent() {
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Escola</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Op. CFTV</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Tipo</th>
+                <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição OP. CFTV</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Data</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Status</th>
                 <th className="text-left py-5 px-4 font-medium text-xs uppercase tracking-widest text-slate-500">Responsável</th>
@@ -176,8 +177,9 @@ function CallsContent() {
                 <tr key={call.id} className="border-b last:border-none hover:bg-slate-50 transition-colors">
                   <td className="py-6 px-8 font-mono text-sm font-medium text-slate-900">{call.number}</td>
                   <td className="py-6 px-4 text-sm">{call.school?.name}</td>
-                  <td className="py-6 px-4 text-sm text-slate-600">{call.creator?.name || '—'}</td>
+                  <td className="py-6 px-4 text-sm text-slate-600">{call.creator?.role === 'operador_cftv' ? call.creator.name : '—'}</td>
                   <td className="py-6 px-4 text-sm text-slate-600">{call.type}</td>
+                  <td className="py-6 px-4 text-sm text-slate-500 max-w-[220px] truncate">{call.description}</td>
                   <td className="py-6 px-4 text-sm text-slate-500">
                     {format(call.date, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
@@ -187,7 +189,7 @@ function CallsContent() {
                     </span>
                   </td>
                   <td className="py-6 px-4 text-sm text-slate-600">{call.responsible || '—'}</td>
-                  <td className="py-6 px-4 text-sm text-slate-500 max-w-[200px] truncate">{call.description}</td>
+                  <td className="py-6 px-4 text-sm text-slate-500 max-w-[200px] truncate">{call.report || '—'}</td>
                   <td className="py-6 px-4">
                     <div className="flex items-center gap-2">
                       {user?.role === 'operador_cftv' && call.status === 'Aberto' && (
