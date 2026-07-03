@@ -20,6 +20,7 @@ function CallsContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(searchParams.get('filter') || 'all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const typeFilter = searchParams.get('type');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('nise_user');
@@ -74,12 +75,17 @@ function CallsContent() {
       }
     }
 
+    const typeParam = searchParams.get('type');
+    if (typeParam) {
+      result = result.filter(call => call.type === typeParam);
+    }
+
     if (priorityFilter !== 'all') {
       result = result.filter(call => call.priority === priorityFilter);
     }
 
     setFilteredCalls(result);
-  }, [calls, searchTerm, statusFilter, priorityFilter]);
+  }, [calls, searchTerm, statusFilter, priorityFilter, searchParams]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -101,8 +107,19 @@ function CallsContent() {
         </div>
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight">Chamados</h1>
-            <p className="text-slate-500">Lista completa de ocorrências registradas no NISE</p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-4xl font-semibold tracking-tight">Chamados</h1>
+              {typeFilter && (
+                <Link href="/calls" className="text-xs text-blue-600 hover:text-blue-800 underline">
+                  Limpar filtro
+                </Link>
+              )}
+            </div>
+            <p className="text-slate-500">
+              {typeFilter
+                ? <>Filtrando por tipo: <span className="font-medium text-blue-700">{typeFilter}</span></>
+                : 'Lista completa de ocorrências registradas no NISE'}
+            </p>
           </div>
           <Button asChild className="flex items-center gap-2">
             <Link href="/new-call">

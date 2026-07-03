@@ -53,6 +53,12 @@ export default function Dashboard() {
     urgent: calls.filter(c => c.priority === 'Urgente').length,
   };
 
+  const typeCounts = calls.reduce<Record<string, number>>((acc, c) => {
+    acc[c.type] = (acc[c.type] || 0) + 1;
+    return acc;
+  }, {});
+  const sortedTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+
   const handleLogout = () => {
     localStorage.removeItem('nise_user');
     window.location.href = '/';
@@ -254,13 +260,26 @@ export default function Dashboard() {
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="w-5 h-5" /> Ocorrências por Tipo
                   </CardTitle>
-                  <CardDescription>Distribuição dos últimos 30 dias</CardDescription>
+                  <CardDescription>Distribuição geral das ocorrências</CardDescription>
                 </CardHeader>
-                <CardContent className="h-80 flex items-center justify-center bg-slate-50 rounded-b-3xl">
-                  <div className="text-center">
-                    <div className="mx-auto w-20 h-20 rounded-full border-8 border-blue-200 border-t-blue-600 animate-spin mb-6"></div>
-                    <p className="text-slate-400">Gráficos interativos com Recharts seriam renderizados aqui</p>
-                    <p className="text-xs text-slate-500 mt-1">(Integração completa em produção)</p>
+                <CardContent>
+                  <div className="space-y-3">
+                    {sortedTypes.map(([type, count], i) => (
+                      <Link key={type} href={`/calls?type=${encodeURIComponent(type)}`} className="flex items-center gap-3 group cursor-pointer">
+                        <div className="w-28 text-xs text-right text-slate-600 truncate group-hover:text-blue-700 transition-colors">{type}</div>
+                        <div className="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-r-full transition-all group-hover:opacity-80"
+                            style={{
+                              width: `${(count / (sortedTypes[0]?.[1] || 1)) * 100}%`,
+                              background: `hsl(${(i * 35) % 360}, 60%, 50%)`
+                            }}
+                          ></div>
+                        </div>
+                        <div className="w-8 text-xs font-mono text-slate-500 text-right">{count}</div>
+                      </Link>
+                    ))}
+                    {calls.length === 0 && <p className="text-slate-400 text-sm text-center py-8">Nenhuma ocorrência registrada.</p>}
                   </div>
                 </CardContent>
               </Card>
