@@ -289,7 +289,7 @@ export default function ReportsPage() {
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Registrado por</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição OP. CFTV</th>
                     <th className="text-left py-4 px-3 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição Tático</th>
-                    <th className="text-right py-4 px-6 font-medium text-xs uppercase tracking-widest text-slate-500">Equipe</th>
+                    <th className="text-left py-4 px-6 font-medium text-xs uppercase tracking-widest text-slate-500">Descrição ADM</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -316,7 +316,7 @@ export default function ReportsPage() {
                         </td>
                         <td className="py-4 px-3 text-sm text-slate-600 whitespace-pre-wrap max-w-[240px]">{call.description || '—'}</td>
                         <td className="py-4 px-3 text-sm text-slate-600 whitespace-pre-wrap max-w-[240px]">{call.report || '—'}</td>
-                        <td className="py-4 px-6 text-sm text-right">{call.team || '—'}</td>
+                        <td className="py-4 px-6 text-sm text-slate-600 whitespace-pre-wrap max-w-[240px]">{call.adminReport || '—'}</td>
                       </tr>
                     ))
                   )}
